@@ -12,10 +12,12 @@
 #define ALT_L LALT_T(KC_L)
 #define GUI_SCLN RGUI_T(KC_SCLN)
 
-// Tap Q and Hold Esc
+// Q+W = Esc and O+P = F4
 const uint16_t PROGMEM qw_esc[] = {KC_Q, KC_W, COMBO_END};
+const uint16_t PROGMEM po_f4[] = {KC_P, KC_O, COMBO_END};
 combo_t key_combos[] = {
     COMBO(qw_esc, KC_ESC),
+    COMBO(po_f4, KC_F4),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -33,7 +35,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [2] = LAYOUT_split_3x5_2(
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS, KC_EQL,
-        KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,            KC_TILD, KC_CIRC, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, KC_NO,            KC_GRV, KC_CIRC, KC_LBRC, KC_RBRC, KC_BSLS,
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,            KC_QUES, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,
                              KC_TRNS, KC_TRNS,                QK_GESC, KC_EXLM
     ),
