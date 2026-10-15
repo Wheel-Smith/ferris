@@ -26,6 +26,17 @@ To build anything you combine the two (see [Building](#3-building-the-firmware))
 9. [Further suggestions (not applied)](#9-further-suggestions-not-applied)
 10. [Troubleshooting](#10-troubleshooting)
 11. [References](#11-references)
+12. [Change history](#12-change-history)
+
+## Current status
+
+| | |
+|---|---|
+| Flashed on | **2026-10-15**, both halves, from this repo's `main` |
+| Built against | QMK `master` @ `7a1bbf37` (2026-10-02), nixpkgs `qmk` 1.2.0, avr-gcc 16.2.0 |
+| Firmware size | 19 634 / 28 672 bytes (68%) |
+| Verified on hardware | All keys on both halves, Backspace repeat, Mac auto-detection, MEDIA+W toggle (Windows auto-detection not yet checked) |
+| Pre-update firmware backups | `~/ferris-left-backup.hex`, `~/ferris-right-backup.hex` on the Mac. These are the January 2025 builds; restore steps in [§4](#backup--restore) |
 
 ---
 
@@ -558,3 +569,22 @@ layers, config clean-up, LTO. These are ideas for later:
 - Breaking changes 2025-08-31 (mouse keycode removal): <https://docs.qmk.fm/ChangeLog/20250831>
 - External userspace: <https://docs.qmk.fm/newbs_external_userspace>
 - keymap-drawer: <https://github.com/caksoylar/keymap-drawer>
+
+---
+
+## 12. Change history
+
+**2026-10-15**: brought up to date with current QMK and flashed to both halves.
+- Renamed the mouse keycodes QMK removed in its 2025-08-31 release (`KC_MS_*` → `MS_*` and friends).
+  The old keymap no longer compiled.
+- Backspace auto-repeats with tap-then-hold (`QUICK_TAP_TERM_PER_KEY`); all other tap-hold keys unchanged.
+- Mac/Win mode: OS detection swaps Ctrl↔Cmd on Macs; MEDIA+W (`CG_TOGG`) overrides it.
+- MEDIA+Q = `QK_BOOT`, so flashing the left half needs no reset button.
+- Named layers, removed dead config (RGB, `COMBO_COUNT`), and replaced an unreachable `*` on NUM.
+- LTO enabled: 92% → 68% flash use.
+- Toolchain moved to `nix shell nixpkgs#qmk`. On macOS, flashing goes through avrdude on
+  `/dev/cu.usbmodem*`, because `qmk flash` fails with `Resource busy`.
+
+**2025-01-19**: Q+W → Esc and O+P → F4 combos; `` ` `` and `~` on SYM (`~` replaced `^`).
+
+**Initial**: base layout derived from the upstream ferris default keymap (home-row mods, 5 layers).
