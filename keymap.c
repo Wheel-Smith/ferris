@@ -46,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 KC_QUOT,  KC_NO,             KC_ASTR, KC_TRNS
     ),
     [4] = LAYOUT_split_3x5_2(
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_BRIU,          KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        QK_BOOT, CG_TOGG, KC_NO,   KC_NO,   KC_BRIU,          KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_BRID,          KC_NO,   KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI,
         KC_MPRV, KC_MPLY, KC_MSTP, KC_MNXT, KC_MUTE,          KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
                              KC_VOLD, KC_VOLU,               KC_TRNS, KC_TRNS
@@ -62,4 +62,21 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
         default:
             return QUICK_TAP_TERM;
     }
+}
+
+// Mac/Win mode. Mac mode swaps Ctrl and GUI everywhere, home-row mods included,
+// so D/K send Cmd and A/; send Ctrl: Windows Ctrl+C muscle memory becomes Cmd+C.
+// The host OS is guessed at every plug-in; CG_TOGG on the MEDIA layer overrides it
+// (saved to EEPROM, used until the next confident detection).
+bool process_detected_host_os_user(os_variant_t detected_os) {
+    if (detected_os == OS_UNSURE) {
+        return true;
+    }
+    bool mac = detected_os == OS_MACOS || detected_os == OS_IOS;
+    if (keymap_config.swap_lctl_lgui != mac || keymap_config.swap_rctl_rgui != mac) {
+        keymap_config.swap_lctl_lgui = mac;
+        keymap_config.swap_rctl_rgui = mac;
+        clear_keyboard(); // drop any mods held across the switch
+    }
+    return true;
 }
