@@ -89,7 +89,12 @@ git -C ~/qmk_firmware submodule update --init --depth 1 lib/lufa lib/printf
 (For this AVR board, only the `lufa` and `printf` submodules are needed. Use
 `git submodule update --init --recursive` if you ever build for ARM/RP2040.)
 
-Link this repo in as a keymap called `rattatui`:
+Link this repo in as a keymap called `rattatui`. Upstream Sweep has no `keymaps/` folder,
+so create it first:
+
+```bash
+mkdir -p ~/qmk_firmware/keyboards/ferris/sweep/keymaps
+```
 
 ```bash
 ln -s ~/projects/ferris ~/qmk_firmware/keyboards/ferris/sweep/keymaps/rattatui
