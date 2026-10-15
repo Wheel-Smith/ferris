@@ -16,20 +16,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-// Set the mouse settings to a comfortable speed/accuracy trade-off,
-// assuming a screen refresh rate of 60 Htz or higher
-// The default is 50. This makes the mouse ~3 times faster and more accurate
+// Mouse keys (accelerated mode), tuned for a comfortable speed/accuracy trade-off
+// assuming a screen refresh rate of 60 Hz or higher. QMK defaults in brackets.
+// Repeat interval in ms [20]: lower = faster, smoother cursor.
 #define MOUSEKEY_INTERVAL 16
-// The default is 20. Since we made the mouse about 3 times faster with the previous setting,
-// give it more time to accelerate to max speed to retain precise control over short distances.
+// Time (in intervals) to reach max speed [30]: longer ramp keeps short moves precise.
 #define MOUSEKEY_TIME_TO_MAX 40
-// The default is 300. Let's try and make this as low as possible while keeping the cursor responsive
+// Delay before the cursor starts repeating, in ms [10].
 #define MOUSEKEY_DELAY 100
-// It makes sense to use the same delay for the mouseweel
+// Same delay for the mouse wheel [10].
 #define MOUSEKEY_WHEEL_DELAY 100
-// The default is 100
+// Wheel repeat interval in ms [80].
 #define MOUSEKEY_WHEEL_INTERVAL 50
-// The default is 40
+// Wheel time (in intervals) to reach max speed [40].
 #define MOUSEKEY_WHEEL_TIME_TO_MAX 100
 
 // Pick good defaults for enabling homerow modifiers
@@ -39,26 +38,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Re-enable tap-then-hold auto-repeat for selected keys (see get_quick_tap_term in keymap.c)
 #define QUICK_TAP_TERM_PER_KEY
 
-// aux
+// Split: wait up to 2.5 s for USB enumeration to decide which half is master
 #define SPLIT_USB_DETECT
 #define SPLIT_USB_TIMEOUT 2500
-
-// 
-// #define COMBO_COUNT 1
-
-// Underglow configuration
-#ifdef RGBLIGHT_ENABLE
-#    define RGBLIGHT_EFFECT_BREATHING
-#    define RGBLIGHT_EFFECT_RAINBOW_MOOD
-#    define RGBLIGHT_EFFECT_RAINBOW_SWIRL
-#    define RGBLIGHT_EFFECT_SNAKE
-#    define RGBLIGHT_EFFECT_KNIGHT
-#    define RGBLIGHT_EFFECT_CHRISTMAS
-#    define RGBLIGHT_EFFECT_STATIC_GRADIENT
-#    define RGBLIGHT_EFFECT_RGB_TEST
-#    define RGBLIGHT_EFFECT_ALTERNATING
-#    define RGBLIGHT_EFFECT_TWINKLE
-#    define RGBLIGHT_HUE_STEP 8
-#    define RGBLIGHT_SAT_STEP 8
-#    define RGBLIGHT_VAL_STEP 8
-#endif
