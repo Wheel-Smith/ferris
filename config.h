@@ -36,6 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM 200
 #define PERMISSIVE_HOLD
 #define QUICK_TAP_TERM 0
+// Re-enable tap-then-hold auto-repeat for selected keys (see get_quick_tap_term in keymap.c)
+#define QUICK_TAP_TERM_PER_KEY
 
 // aux
 #define SPLIT_USB_DETECT

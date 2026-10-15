@@ -52,3 +52,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                              KC_VOLD, KC_VOLU,               KC_TRNS, KC_TRNS
     )
 };
+
+// Tap Backspace, then press and hold it again within TAPPING_TERM to auto-repeat. Every other
+// tap-hold key keeps QUICK_TAP_TERM 0, so a quick tap-then-hold is always a hold.
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(3, KC_BSPC):
+            return TAPPING_TERM;
+        default:
+            return QUICK_TAP_TERM;
+    }
+}
