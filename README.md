@@ -35,7 +35,7 @@ To build anything you combine the two (see [Building](#3-building-the-firmware))
 | Flashed on | **2026-10-15**, both halves, from this repo's `main` |
 | Built against | QMK `master` @ `7a1bbf37` (2026-10-02), nixpkgs `qmk` 1.2.0, avr-gcc 16.2.0 |
 | Firmware size | 19 634 / 28 672 bytes (68%) |
-| Verified on hardware | All keys on both halves, Backspace repeat, Mac auto-detection, MEDIA+W toggle (Windows auto-detection not yet checked) |
+| Verified on hardware | All keys on both halves, Backspace repeat, Windows + Mac auto-detection, MEDIA+W toggle |
 | Pre-update firmware backups | `~/ferris-left-backup.hex`, `~/ferris-right-backup.hex` on the Mac. These are the January 2025 builds; restore steps in [§4](#backup--restore) |
 
 ---
