@@ -161,20 +161,50 @@ Any of these works. The Pro Micro's Caterina bootloader then waits about 8 secon
 `QK_BOOT` only works on the half that has USB. That's fine for the left half. For the
 right half, use bootmagic or the reset button.
 
-### Step by step
+### Step by step (macOS)
+
+> [!IMPORTANT]
+> On macOS, `qmk flash` can fail with
+> `cannot open port /dev/tty.usbmodem…: Resource busy`. QMK's script
+> (`platforms/avr/flash.mk`) only looks for `/dev/tty.*` devices, while avrdude needs the
+> `/dev/cu.*` one. Nothing gets written when this happens, so it's harmless. Use the
+> compile + avrdude flow below instead, which is tested on this setup.
 
 1. Unplug USB, then unplug the TRRS cable.
-2. Plug USB into the **left** half only.
-3. Run:
+2. Build:
    ```bash
-   nix shell nixpkgs#qmk --command qmk flash -kb ferris/sweep -km rattatui
+   nix shell nixpkgs#qmk --command qmk compile -kb ferris/sweep -km rattatui
    ```
-   It compiles, then waits with *"Waiting for bootloader…"*.
-4. Enter the bootloader (see the table). avrdude flashes the half and it reboots.
-5. **If the right half needs it** (after a QMK update): unplug, plug USB into the
-   **right** half, run the same command, and enter the bootloader by holding **P** while
-   plugging in, or with the reset button.
-6. Unplug USB, connect TRRS, and plug USB into the left half.
+3. Make sure no other USB-serial device is attached. This should print *no matches found*:
+   ```bash
+   ls /dev/cu.usbmodem*
+   ```
+4. Plug USB into the **left** half only and run:
+   ```bash
+   nix shell nixpkgs#avrdude --command sh -c 'echo "Press reset now"; until ls /dev/cu.usbmodem* >/dev/null 2>&1; do sleep 0.2; done; sleep 1; avrdude -p atmega32u4 -c avr109 -P "$(ls /dev/cu.usbmodem* | head -1)" -U flash:w:$HOME/qmk_firmware/ferris_sweep_rattatui.hex:i'
+   ```
+5. At *"Press reset now"*, enter the bootloader (see the table). Success looks like
+   `Writing | #### … 100%`, `Reading | #### … 100%`, then `19634 bytes of flash verified`.
+   If the 8-second window closes first, run the command again.
+6. **If the right half needs it** (after a QMK update): unplug, plug USB into the
+   **right** half, run the same command, and enter the bootloader with the reset button
+   or by holding **P** while plugging in. It's the same `.hex` for both halves.
+7. Unplug USB, connect TRRS, and plug USB into the left half.
+
+On Linux/Windows (QMK MSYS), plain `qmk flash -kb ferris/sweep -km rattatui` does steps 2–5 in one go.
+
+### Backup & restore
+
+Before risky changes, read the current firmware off a half (it only reads, nothing is changed):
+
+```bash
+nix shell nixpkgs#avrdude --command sh -c 'echo "Press reset now"; until ls /dev/cu.usbmodem* >/dev/null 2>&1; do sleep 0.2; done; sleep 1; avrdude -p atmega32u4 -c avr109 -P "$(ls /dev/cu.usbmodem* | head -1)" -U flash:r:$HOME/ferris-left-backup.hex:i'
+```
+
+A good dump is about 78 KB (the full 32 KB chip). To restore it, run the flash command
+above with the backup file in place of `ferris_sweep_rattatui.hex`. The dump includes the
+bootloader area, which protects itself from being overwritten, so a verify mismatch at
+the very end of flash is harmless.
 
 ### Flashing without the CLI (e.g. from Windows)
 
@@ -184,13 +214,16 @@ put the half into bootloader mode.
 ### Optional: EE_HANDS (USB into either half)
 
 1. Add `#define EE_HANDS` to `config.h`.
-2. Flash each half **once** with its handedness written to EEPROM:
+2. Flash each half **once** with its handedness written to EEPROM. On Linux/Windows:
    ```bash
    qmk flash -kb ferris/sweep -km rattatui -bl avrdude-split-left
    ```
    ```bash
    qmk flash -kb ferris/sweep -km rattatui -bl avrdude-split-right
    ```
+   On macOS, use the avrdude command above with an extra
+   `-U eeprom:w:$HOME/qmk_firmware/quantum/split_common/eeprom-lefthand.eep:i`
+   (or `eeprom-righthand.eep` on the right half).
 3. Later flashes can use the plain command. Bootmagic clears EEPROM, so flash the
    split targets again after using it.
 
@@ -501,6 +534,7 @@ layers, config clean-up, LTO. These are ideas for later:
 |---|---|
 | Right half dead | TRRS cable loose or bad (they fail often). After a QMK update, reflash the right half too |
 | Keys on one half come out mirrored or wrong | USB is in the right half while handedness is `MASTER_LEFT`. Plug into left, or set up `EE_HANDS` |
+| `qmk flash` says `Resource busy` on `/dev/tty.usbmodem…` | macOS quirk in QMK's flash script. Nothing was written. Use the avrdude command in §4 |
 | `qmk flash` waits forever | The half didn't enter the bootloader. Use MEDIA+Q, the reset button (double-tap on some clones) or bootmagic. Use a **data** USB cable, not a charge-only one |
 | Cmd and Ctrl are the wrong way round | OS detection guessed wrong or couldn't tell (common through KVMs/docks). Press MEDIA+W to toggle |
 | Mode reset to Windows after flashing with bootmagic | Bootmagic clears EEPROM. Detection or MEDIA+W sets it again |
